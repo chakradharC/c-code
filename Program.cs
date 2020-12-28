@@ -1,82 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
-namespace AbstractClass
+namespace Clock
 {
-    /*class University
+    static class Program
     {
-        public virtual void Method1() {}
-        public virtual void Method2() {}
-        public void Method3()
+        /// <summary>
+        /// The main entry point for the application.
+        /// </summary>
+        [STAThread]
+        static void Main()
         {
-
-        }
-    }
-    abstract class MyClass : University
-    {
-        abstract public  void Method4();
-        public override  void Method1()
-        {
-            
-        }
-        public override  void Method2()
-        {
-            
-        }
-    }
-    class Program
-    {
-        static void Main(string[] args)
-        {
-            University u = new University();
-            MyClass my = new MyClass();
-        }
-    }*/
-    class One
-    {
-        public void OneMethod()
-        {
-
-        }
-        void AnimalSound()
-        {
-
-        }
-    }
-    class Two
-    {
-        public void OneMethod()
-        {
-
-        }
-    }
-    interface IAnimal
-    {
-        void AnimalSound();
-    }
-    interface IAnimalProperties
-    {
-        void AnimalMovement();
-    }
-    class Dog : One, IAnimal
-    {
-        public void AnimalSound()
-        {
-            // dog barking sound   
-        }
-        public void AnimalMovement()
-        {
-
-        }
-    }
-    class Program
-    {
-        public static void Main(string[] args)
-        {
-
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new Form1());
         }
     }
 }
