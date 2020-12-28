@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml;
 
-namespace Clock
+namespace PhoneBook
 {
     public partial class Form1 : Form
     {
@@ -16,55 +18,102 @@ namespace Clock
         {
             InitializeComponent();
         }
+        
 
-        private void timer1_Tick(object sender, EventArgs e)
+        private void button4_Click(object sender, EventArgs e)
         {
-            //to display the time in the label
-            label1.Text = DateTime.Now.ToString("hh:mm:ss tt");
-        }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-            this.Text = "Digital Clock"; //To set the title
-            timer1.Start(); //starting the timer
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            ColorDialog colorDlg = new ColorDialog();
-            colorDlg.AllowFullOpen = false;
-            colorDlg.AnyColor = true;
-            colorDlg.SolidColorOnly = false;
-            colorDlg.Color = Color.Red;
-
-            if (colorDlg.ShowDialog() == DialogResult.OK)
+            try
             {
-                label1 .ForeColor = colorDlg.Color;
-               
+                panel1.Enabled  = true;
+                data.PhoneBook .AddPhoneBookRow (data.PhoneBook .NewPhoneBookRow ());
+                phoneBookBindingSource .MoveLast ();
+                txtNumber .Focus ();
             }
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            ColorDialog colorDlg = new ColorDialog();
-            if (colorDlg.ShowDialog() == DialogResult.OK)
+            catch (Exception  ex)
             {
-                BackColor = colorDlg.Color;
-            }  
+                MessageBox.Show(ex.Message , "message", MessageBoxButtons.OK , MessageBoxIcon.Error );
+                data.PhoneBook .RejectChanges();
+            }
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            Form2 newForm = new Form2();
-            newForm.Show();
-            this.Hide();
+            panel1.Enabled = true;
+            txtNumber.Focus ();
         }
 
-        private void button4_Click(object sender, EventArgs e)
+        private void button2_Click(object sender, EventArgs e)
         {
-            Form3 newForm = new Form3();
-            newForm.Show();
-            this.Hide();
+            phoneBookBindingSource .ResetBindings(false);
+            panel1.Enabled= false;
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            try
+            {
+
+
+                phoneBookBindingSource.EndEdit();
+                data.PhoneBook.AcceptChanges();
+                data.PhoneBook.WriteXml(string.Format("{0}//data.dat", Application.StartupPath));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                data.PhoneBook.RejectChanges();
+            }
+        }
+
+
+
+        static DataSet1 db;
+        protected static DataSet1 data
+        {
+            get
+            {
+                if (db == null)
+                    db = new DataSet1();
+                return db;
+            }
+        }
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            string fileName = string.Format("{0}//data.dat", Application.StartupPath);
+            if (File.Exists(fileName))
+            {
+                data.PhoneBook.ReadXml(fileName);
+                phoneBookBindingSource.DataSource = data.PhoneBook ;
+                panel1.Enabled = false;
+
+            }
+
+        }
+
+        private void dataGridView1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete)
+            {
+                if (MessageBox.Show("Are you sure want to delete this record?", "Message", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    phoneBookBindingSource.RemoveCurrent();
+            }
+        }
+
+        private void txt_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)13)//Enter key
+            {
+                if (!string.IsNullOrEmpty(txtsearch .Text))
+                {
+                    //you can use linq to query data
+                    var query = from o in data.PhoneBook 
+                                where o.Number == txtsearch  .Text || o.Name.ToLowerInvariant().Contains(txtsearch.Text.ToLowerInvariant())
+                                select o;
+                    dataGridView1.DataSource = query.ToList();
+                }
+                else
+                    dataGridView1.DataSource = phoneBookBindingSource;
+            }
         }
     }
 }
