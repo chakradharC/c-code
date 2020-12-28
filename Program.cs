@@ -4,110 +4,176 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Date_Time
+namespace Ex4_Person
 {
+    class Person
+    {
+        private string firstName;
+        private string lastName;
+        private string emailAddress;
+        private DateTime dOB;
+        public Person()
+        {
+
+        }
+        public Person(string firstName, string lastName, string emailAddress)
+        {
+            this.firstName = firstName;
+            this.lastName = lastName;
+            this.emailAddress = emailAddress;
+        }
+        public Person(string firstName, string lastName, DateTime dOB)
+        {
+            this.firstName = firstName;
+            this.lastName = lastName;
+            this.DOB = dOB;
+        }
+        public Person(string firstName, string lastName, string emailAddress, DateTime dOB)
+        {
+            this.firstName = firstName;
+            this.lastName = lastName;
+            this.emailAddress = emailAddress;
+            this.DOB = dOB;
+        }
+        //public  string DOB { get => dOB.ToString(); set => dOB = new DateTime(Convert.ToInt32(value.Substring(0,4)), Convert.ToInt32(value.Substring(4, 2)),Convert.ToInt32(value.Substring(6,2))); }
+        public string EmailAddress { get => emailAddress; set => emailAddress = value; }
+        public string LastName { get => lastName; set => lastName = value; }
+        public string FirstName { get => firstName; set => firstName = value; }
+        public DateTime DOB { get => dOB; set => dOB = value; }
+        public bool Adult
+        {
+            get
+            {
+                if ((DateTime.Today.Year - dOB.Year) >= 18)
+                    return true;
+                else
+                    return false;
+            }
+        }
+        public string SunSign
+        {
+            get
+            {
+                switch (dOB.Month)
+                {
+                    case 1:
+                        if (dOB.Day <= 20)
+                        {
+                            return "Capricorn";
+                        }
+                        else
+                            return "Aquarius";
+                    //break;
+                    case 2:
+                        if (dOB.Day <= 18)
+                        {
+                            return "Aquarius";
+                        }
+                        else
+                            return "Pisces";
+                    default:
+                        return "null";
+                }
+            }
+        }
+        public bool BirthDay
+        {
+            get
+            {
+                if ((dOB.Month == DateTime.Today.Month) && (dOB.Day == DateTime.Today.Day))
+                {
+                    return true;
+                }
+                else
+                    return false;
+            }
+        }
+        public string ScreenName
+        {
+            get
+            {
+                string screenName;
+                screenName = firstName.Substring(0, 4) + dOB.Month.ToString();
+                return screenName;
+            }
+        }
+    }
+    interface IPayable
+    {
+        double RetrieveDueAmount();
+        void AddToDueAmount(int dueAmount);
+        void PaymentAddress(string address);
+    }
+    class Employee : Person, IPayable
+    {
+        private double salary;
+        private string mailingAddress;
+        private double dueAmount;
+        public Employee(string fName, string lName, string email, double salary, double dueAmount, string mAdress)
+        {
+            base.FirstName = fName;
+            base.LastName = lName;
+            base.EmailAddress = email;
+            this.salary = salary;
+            this.dueAmount = dueAmount;
+            this.mailingAddress = mAdress;
+        }
+        public Employee()
+        {
+            dueAmount = 0.0;
+        }
+        public double Salary
+        {
+            get
+            {
+                return (salary - dueAmount);
+            }
+            set => salary = value;
+        }
+        public string MailingAddress
+        {
+            get => mailingAddress;
+            set => mailingAddress = value;
+        }
+        public void AddToDueAmount(int dueAmount)
+        {
+            this.dueAmount += dueAmount;
+        }
+        public void PaymentAddress(string address)
+        {
+            this.mailingAddress = address;
+        }
+        public double RetrieveDueAmount()
+        {
+            return dueAmount;
+        }
+    }
     class Program
     {
         static void Main(string[] args)
         {
-            //year of birth
-            int yob;
-            //month of birth
-            int mob;
-            //day of birth
-            int dob;
-            //read the  date [year, month and day from the user]
-            //read each of them seperately
-            Console.WriteLine("Enter the year of your birth");
-            yob = Convert.ToInt32(Console.ReadLine());
-            Console.WriteLine("Enter the month of your birth");
-            mob = Convert.ToInt32(Console.ReadLine());
-            Console.WriteLine("Enter the day of your birth");
-            dob = Convert.ToInt32(Console.ReadLine());
-            //rCode=1 then it means the i/p date is a future date
-            //rCode=2 then it means the age of the person is going >=135 years
-            //rCode=0  born today
-            //else its the age of the user.
-            int rCode = CheckTheBirthDate(yob, mob, dob);
-            switch (rCode)
-            {
-                case -1:Console.WriteLine("You are born in this year..");
-                        break;
-                case 0:Console.WriteLine("Hey you are born today. Welcome!!!");
-                       break;
-                case 1:Console.WriteLine("You have entered a future date....");
-                       break;
-                case 2:Console.WriteLine("Your are lucky to have lived >=135.. Impossible");
-                       break;
-                default:Console.WriteLine("Age of the user is: " + rCode);
-                if (TodayBirthday(mob, dob))
-                    Console.WriteLine("Happy BirthDay");
-                    Console.WriteLine(DisplayAstrologicalSign(mob, dob));
-                    break;
-            }
+            /* string fName, lName, email, dOB;
+            
+            Console.WriteLine("Enter the First Name");
+            fName = Console.ReadLine();
+            Console.WriteLine("Enter the Last Name");
+            lName = Console.ReadLine();
+            Console.WriteLine("Enter the Email Address");
+            email = Console.ReadLine();
+            Console.WriteLine("Enter the date of birth in the format year, month and day");
+            dOB = Console.ReadLine();
+            DateTime dT = new DateTime(Convert.ToInt32(dOB.Substring(0, 6)), Convert.ToInt32(dOB.Substring(4, 4)), Convert.ToInt32(dOB.Substring(6, 2)));
+            Person p1 = new Person(fName, lName, email, dT);
+            Console.WriteLine("The person is an adult? : " + p1.Adult);
+            Console.WriteLine("The sunsign:" + p1.SunSign);
+            Console.WriteLine("Toad is BirthDay?:" + p1.BirthDay);
+            Console.WriteLine("The allotted screen name:" + p1.ScreenName);
+            */
+            //employee class related
+            Employee e1 = new Employee("Mani", "j", "mani97@gmail.com", 100000.00,555.0, "Vijayawada");
+            Console.WriteLine("Salary:" + e1.Salary);
+            Console.WriteLine(e1.ScreenName);
             Console.ReadLine();
-        }
-        private static string DisplayAstrologicalSign(int mob, int dob)
-        {
-            switch (mob)
-            {
-                case 1:
-                    if (dob <= 20)
-                    {
-                        return "Capricorn";
-                    }
-                    else
-                        return "Aquarius";
-                //break;
-                case 2:
-                    if (dob <= 18)
-                    {
-                        return "Aquarius";
-                    }
-                    else
-                        return "Pisces";
-                case 3:
-                    if (dob <= 20)
-                    {
-                        return "Pisces";
-                    }
-                    else
-                        return "Aries";
-                default: return "null";
-            }
-        }
-        //returns true if today is user's birth day
-        //else false
-        private static bool TodayBirthday(int mob, int dob)
-        {
-            //DateTime tdy = DateTime.Today;
-            if (mob == DateTime.Today.Month && dob == DateTime.Today.Day)
-                return true;
-            else
-                return false;
-        }
-        private static int CheckTheBirthDate(int yob, int mob, int dob)
-        {
-            DateTime bDate = new DateTime(yob, mob, dob);
-            DateTime tDate = DateTime.Today;
-            int rValue = DateTime.Compare(bDate, tDate);
-            if (rValue < 0)
-            {
-                if ((tDate.Year - bDate.Year) >= 135)
-                    return 2;
-                else if ((tDate.Year - bDate.Year) == 0)
-                    return -1;
-                else
-                    return (tDate.Year - bDate.Year);
-            }
-            else if (rValue > 0)
-            {
-                return 1;
-            }
-            else
-            {
-                return 0;
-            }
         }
     }
 }
